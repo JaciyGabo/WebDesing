@@ -1,0 +1,106 @@
+
+.container {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  height: 100vh; 
+  width: 100vw; 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+}
+
+.form-box {
+  background: #fff;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%; 
+  max-width: 350px; 
+}
+
+.form-box:hover {
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+
+}
+
+.switch-button {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #174b7a;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 16px;
+  width: 80%; /* Ocupa todo el ancho disponible */
+}
+
+.switch-button:hover {
+  background-color: #092d4d;
+}
+
+/* Formulario */
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%; /* Asegura que el formulario ocupe todo el ancho de la caja */
+}
+
+label, input {
+  margin-bottom: 10px;
+  width: 100%; /* Asegura que los inputs ocupen todo el ancho disponible */
+}
+
+input {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 90%;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #3f787e;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  width: 80%;
+}
+
+button:hover {
+  background-color: #155057;
+}
+
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  background-color: white;
+  border: 1px solid rgb(48, 125, 161);
+  box-shadow: 0 0 10px rgb(31, 91, 119);
+  width: 300px;
+  height: auto;
+  border-radius: 20px;
+  display:block;
+  place-items: center;
+}
+
+.cerrar {
+  background-color: rgb(248, 109, 109);
+  color: aliceblue;
+  width: 200px;
+}
+
+.cerrar:hover {
+  background-color: rgb(255, 57, 57);
+  color: aliceblue;
+}
