@@ -1,5 +1,5 @@
 
-.container {
+/*.container {
   display: flex;
   justify-content: center; 
   align-items: center;
@@ -34,24 +34,24 @@
   border-radius: 15px;
   cursor: pointer;
   font-size: 16px;
-  width: 80%; /* Ocupa todo el ancho disponible */
+  width: 80%; 
 }
 
 .switch-button:hover {
   background-color: #092d4d;
 }
 
-/* Formulario */
+
 form {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%; /* Asegura que el formulario ocupe todo el ancho de la caja */
+  width: 100%; 
 }
 
 label, input {
   margin-bottom: 10px;
-  width: 100%; /* Asegura que los inputs ocupen todo el ancho disponible */
+  width: 100%; 
 }
 
 input {
@@ -103,4 +103,88 @@ button:hover {
 .cerrar:hover {
   background-color: rgb(255, 57, 57);
   color: aliceblue;
+}/*
+
+
+
+/* Estilos generales */
+
+/* Estilos generales */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.App {
+  text-align: center;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Estilos para los botones */
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Estilos para los elementos agregados */
+.element-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column; /* Cambia la dirección a columna */
+  gap: 10px; /* Espacio entre elementos */
+  align-items: center; /* Centra los elementos horizontalmente */
+}
+
+.element {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.3s ease;
+  width: 80%; /* Ancho del elemento */
+}
+
+.element:hover {
+  transform: scale(1.05);
+  background-color: #0056b3;
+}
+
+/* Estilos para el botón de vaciar */
+.clear-button {
+  background-color: #dc3545;
+}
+
+.clear-button:hover {
+  background-color: #c82333;
 }
