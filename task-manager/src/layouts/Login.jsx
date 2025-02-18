@@ -1,0 +1,164 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Form, Input, Button, Typography, Card, Space } from "antd";
+import { LockFilled } from "@ant-design/icons";
+
+const { Title, Text } = Typography;
+
+const Login = ({ onChange }) => {
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const [messagee, setMessagee] = useState(""); // Estado para el mensaje
+
+
+  const handleLogin = async (values) => {
+    try {
+      const response = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: values.username,
+          password: values.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.status === 200) {
+        // Si el login es exitoso, guarda el token en el localStorage
+        localStorage.setItem("token", data.token);
+        //navigate("/dashboard"); // Redirigir al dashboard
+        console.log(data)
+        setShowModal(true)
+        setMessagee(data.message)
+      } else {
+        setError(data.message); // Mostrar el mensaje de error
+      }
+    } catch (error) {
+      console.error(error);
+      setError("Error de conexión al servidor");
+    }
+  };
+  const cerrarModal = () => {
+    setShowModal(false)
+    navigate("/dashboard");
+  }
+
+
+  return (
+    <div>
+      <Card
+        style={{
+          width: "100%",
+          maxWidth: 350,
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          borderRadius: 20,
+          paddingLeft: 20,
+          paddingRight: 20,
+        }}
+      >
+        <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+          <Title level={2} style={{ color: "#5c6b7e", textAlign: "center" }}>
+            <LockFilled /> Login
+          </Title>
+
+          {error && (
+            <Text type="danger" style={{ textAlign: "center", display: "block" }}>
+              {error}
+            </Text>
+          )}
+
+          <Form onFinish={handleLogin}>
+            <Form.Item
+              name="username"
+              rules={[{ required: true, message: "¡Ingrese su usuario!" },   { type: "email", message: "¡Ingrese un email válido!" }]}
+            >
+              <Input placeholder="Email" />
+            </Form.Item>
+
+            <Form.Item
+              name="password"
+              rules={[{ required: true, message: "¡Ingrese su contraseña!" }]}
+            >
+              <Input.Password placeholder="Password" />
+            </Form.Item>
+
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                style={{
+                  width: "100%",
+                  backgroundColor: "#5c6b7e",
+                  borderColor: "#5c6b7e",
+                }}
+              >
+                Login
+              </Button>
+            </Form.Item>
+
+            <Form.Item>
+              <Button
+                type="default"
+                onClick={onChange}
+                style={{
+                  width: "100%",
+                  backgroundColor: "#f0f2f5",
+                  borderColor: "#5c6b7e",
+                  color: "#5c6b7e",
+                }}
+              >
+                Registrarse
+              </Button>
+            </Form.Item>
+          </Form>
+        </Space>
+      </Card>
+      
+      {showModal && (
+        <section
+          style={{
+            position: "fixed", 
+            top: "50%", 
+            left: "50%", 
+            transform: "translate(-50%, -50%)", 
+            padding: "20px", 
+            backgroundColor: "white", 
+            border: "1px solid rgb(48, 125, 161)", 
+            boxShadow: "0 0 10px rgb(31, 91, 119)", 
+            width: "300px", 
+            height: "auto", 
+            borderRadius: "20px", 
+            display: "block", 
+            textAlign: "center", 
+          }}
+          className="modal"
+        >
+          <p>
+            <strong>{messagee}</strong> {/* Usando el estado messagee */}
+          </p>
+          <button
+            className="cerrar"
+            onClick={cerrarModal}
+            style={{
+              padding: "5px 10px",
+              backgroundColor: "#d50404",
+              color: "white",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+              marginTop: "10px", // Espacio superior para separar el botón del texto
+            }}
+          >
+            Cerrar
+          </button>
+        </section>
+      )}
+    </div>
+  );
+};
+
+export default Login;

@@ -1,4 +1,5 @@
 import  { useState } from 'react';
+import '../App.css'; // Importa los estilos
 
 const ElementAdder = () => {
   const [elements, setElements] = useState([]);
@@ -22,18 +23,13 @@ const ElementAdder = () => {
   return (
     <div>
       <button onClick={addElement}>Agregar Elemento</button>
-      <button onClick={clearElements}>Vaciar Elementos</button>
-      <div>
+      <button className="clear-button" onClick={clearElements}>Vaciar Elementos</button>
+      <div className="element-container">
         {elements.map(element => (
           <div
             key={element.id}
-            style={{
-              backgroundColor: element.color,
-              padding: '10px',
-              margin: '5px',
-              display: 'inline-block',
-              cursor: 'pointer'
-            }}
+            className="element"
+            style={{ backgroundColor: element.color }}
             onClick={() => removeElement(element.id)}
           >
             <span>Elemento</span>
