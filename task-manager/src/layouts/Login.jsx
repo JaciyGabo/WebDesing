@@ -28,14 +28,12 @@ const Login = ({ onChange }) => {
       const data = await response.json();
 
       if (response.status === 200) {
-        // Si el login es exitoso, guarda el token en el localStorage
         localStorage.setItem("token", data.token);
-        //navigate("/dashboard"); // Redirigir al dashboard
         console.log(data)
         setShowModal(true)
         setMessagee(data.message)
       } else {
-        setError(data.message); // Mostrar el mensaje de error
+        setError(data.message);
       }
     } catch (error) {
       console.error(error);

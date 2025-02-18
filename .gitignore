@@ -1,2 +1,2 @@
-echo "firebase-config.json" >> .gitignore
-echo ".env" >> .gitignore
+firebase-config.json
+.env
