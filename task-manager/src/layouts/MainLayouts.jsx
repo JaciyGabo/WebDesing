@@ -13,7 +13,7 @@ const { Title } = Typography;
 const MainLayout = ({ children }) => {
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Sider
+      <Sider 
         width={200}
         theme="dark"
         style={{
@@ -80,3 +80,4 @@ const MainLayout = ({ children }) => {
 };
 
 export default MainLayout;
+

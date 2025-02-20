@@ -9,7 +9,7 @@ const Login = ({ onChange }) => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [messagee, setMessagee] = useState(""); // Estado para el mensaje
+  const [messagee, setMessagee] = useState("");
 
 
   const handleLogin = async (values) => {
@@ -136,7 +136,7 @@ const Login = ({ onChange }) => {
           className="modal"
         >
           <p>
-            <strong>{messagee}</strong> {/* Usando el estado messagee */}
+            <strong>{messagee}</strong>
           </p>
           <button
             className="cerrar"
@@ -148,7 +148,7 @@ const Login = ({ onChange }) => {
               border: "none",
               borderRadius: "5px",
               cursor: "pointer",
-              marginTop: "10px", // Espacio superior para separar el botón del texto
+              marginTop: "10px",
             }}
           >
             Cerrar

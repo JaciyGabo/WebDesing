@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Login from "../layouts/Login";
-import Register from "../layouts/Register";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
 
 const LoginPage = () => {
   const [showLogin, setShowLogin] = useState(true);
@@ -23,7 +23,7 @@ const LoginPage = () => {
         {showLogin ? <Login onChange={toggleView}/> : <Register onChange={toggleView}/>}
       
       </div>
-  )
+  ) 
 }
 
 export default LoginPage

@@ -15,7 +15,7 @@ const LandingPage = () => {
 
     return () => clearTimeout(timer);
   }, [navigate]);
-
+ 
   return (
     <div
       style={{

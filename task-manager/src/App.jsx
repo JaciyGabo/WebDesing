@@ -1,7 +1,7 @@
 //import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
-import LoginPage from "./pages/LoginPage";
+import LoginPage from "./layouts/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import MainLayout from "./layouts/MainLayouts";
 import 'antd/dist/reset.css';

@@ -1,8 +1,6 @@
 import { useState } from "react";
-//import { useNavigate } from "react-router-dom";
 import { Form, Input, Button, Typography, Card, Space, message } from "antd";
 import { UserAddOutlined } from "@ant-design/icons";
-import './modal.css';
 
 const { Title } = Typography;
 
@@ -10,7 +8,7 @@ const Register = ({ onChange }) => {
   const [loading, setLoading] = useState(false);
   //const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [messagee, setMessagee] = useState(""); // Estado para el mensaje
+  const [messagee, setMessagee] = useState("");
 
   const handleRegister = async (values) => {
     setLoading(true);
@@ -23,17 +21,13 @@ const Register = ({ onChange }) => {
 
       const data = await response.json();
       if (response.ok) {
-        // Si la respuesta es OK, mostrar el mensaje de éxito
         message.success(data.message || "Usuario creado correctamente.");
-        //onChange(); // Redirigir o cambiar la vista (si es necesario)
-        setShowModal(true); // Mostrar el modal
-        setMessagee(data.message || "Usuario creado correctamente"); // Actualizar el mensaje en el estado
+        setShowModal(true);
+        setMessagee(data.message || "Usuario creado correctamente");
       } else {
-        // Si hubo un error en la respuesta, mostrar el mensaje de error
         message.error(data.message || "Error en el registro.");
       }
     } catch (error) {
-      // En caso de un error en la solicitud, mostrar un mensaje de error genérico
       message.error("Hubo un error al realizar el registro. Intente de nuevo.");
     } finally {
       setLoading(false);
