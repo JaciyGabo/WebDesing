@@ -38,13 +38,13 @@ const MainLayout = ({ children }) => {
           style={{ background: "#5c6b7e", borderRight: 0 }}
         >
           <Menu.Item key="1" icon={<DashboardOutlined />}>
-            <Link to="/dashboard">Dashboard</Link>
+            <Link to="/dashboard">Inicio</Link>
           </Menu.Item>
           <Menu.Item key="2" icon={<UserOutlined />}>
-            <Link to="/profile">Profile</Link>
+            <Link to="/profile">Perfil</Link>
           </Menu.Item>
           <Menu.Item key="3" icon={<SettingOutlined />}>
-            <Link to="/settings">Settings</Link>
+            <Link to="/settings">Ajustes</Link>
           </Menu.Item>
         </Menu>
       </Sider>

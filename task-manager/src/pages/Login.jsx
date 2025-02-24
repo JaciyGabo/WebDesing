@@ -60,7 +60,7 @@ const Login = ({ onChange }) => {
       >
         <Space direction="vertical" size="middle" style={{ width: "100%" }}>
           <Title level={2} style={{ color: "#5c6b7e", textAlign: "center" }}>
-            <LockFilled /> Login
+            <LockFilled /> Inicio de sesión
           </Title>
 
           {error && (
@@ -81,7 +81,7 @@ const Login = ({ onChange }) => {
               name="password"
               rules={[{ required: true, message: "¡Ingrese su contraseña!" }]}
             >
-              <Input.Password placeholder="Password" />
+              <Input.Password placeholder="Contraseña" />
             </Form.Item>
 
             <Form.Item>
@@ -94,7 +94,7 @@ const Login = ({ onChange }) => {
                   borderColor: "#5c6b7e",
                 }}
               >
-                Login
+                Iniciar sesión 
               </Button>
             </Form.Item>
 

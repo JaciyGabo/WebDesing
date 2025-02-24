@@ -1,34 +1,59 @@
 import { useState, useEffect } from "react";
 import { Modal, Input, Select, DatePicker, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 
 const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [tasks, setTasks] = useState([]);
+  const [taskID, setTaskId] = useState([]);
   const [task, setTask] = useState({
     name: "",
     description: "",
-    deadline: null,
+    dueDate: null,
     status: "In Progress",
-    category: "",
+    category: "Work",
   });
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const getTasks = async () => {
       const tasks = await fetchTasks();
+
       if (tasks) {
-        setTasks(tasks);
+        const formattedTask = tasks.map(task => ({
+          ...task,
+          dueDate: task.dueDate ? dayjs(task.dueDate).format("DD/MM/YYYY") : "Sin fecha",
+
+
+        }))
+        setTasks(formattedTask);
       }
     };
 
     getTasks();
+
   }, []);
 
-  const showModal = () => setIsModalOpen(true);
-  const handleCancel = () => setIsModalOpen(false);
+  const showModal = () => {
+    setIsEditMode(false);
+    setIsModalOpen(true);
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setTask({
+      name: "",
+      description: "",
+      dueDate: null,
+      status: "In Progress",
+      category: "Work",
+    })
+
+  }
 
   const handleInputChange = (e) => {
     setTask({ ...task, [e.target.name]: e.target.value });
@@ -38,35 +63,41 @@ const DashboardPage = () => {
     setTask({ ...task, status: value });
   };
 
-  const handleDateChange = (date, dateString) => {
+  /*const handleDateChange = (date, dateString) => {
     setTask({ ...task, deadline: dateString });
-  };
+  };*/
 
   const handleCategoryChange = (value) => {
     setTask({ ...task, category: value });
   };
 
   const handleSaveTask = async () => {
-    try {
-      if (!task.dueDate) {
-        console.error("El campo dueDate es requerido");
-        return;
+    if (isEditMode) {
+      console.log(taskID)
+      updateTask(taskID, {
+        name: task.name,
+        category: task.category,
+        description: task.description,
+        status: task.status,
+        dueDate: task.dueDate ? task.dueDate.toISOString() : null
+      })
+    } else {
+      try {
+        if (!task.dueDate) {
+          console.error("El campo dueDate es requerido");
+          return;
+        }
+        await addTask({ ...task, dueDate: task.dueDate.toISOString() });
+        console.log("Tarea guardada:", task);
+        handleCancel();
+        const updatedTasks = await fetchTasks();
+        setTasks(updatedTasks);
+
+      } catch (error) {
+        console.error("Error al guardar la tarea:", error);
       }
-      await addTask(task);
-      console.log("Tarea guardada:", task);
-      handleCancel();
-      const updatedTasks = await fetchTasks();
-      setTasks(updatedTasks);
-      setTask({
-        name: "",
-        description: "",
-        deadline: null,
-        status: "In Progress",
-        category: "",
-      });
-    } catch (error) {
-      console.error("Error al guardar la tarea:", error);
     }
+
   };
 
   const addTask = async (task) => {
@@ -106,12 +137,13 @@ const DashboardPage = () => {
 
       const data = await response.json();
       if (response.ok) {
+        //console.log(data)
         return data;
       } else {
         setError(data.message || "Error al obtener las tareas");
       }
     } catch (error) {
-      setError("Error al obtener las tareas");
+      setError("Error al obtener las tareas", error);
     }
   };
 
@@ -142,6 +174,7 @@ const DashboardPage = () => {
   };
 
   const deleteTask = async (taskId) => {
+    console.log(taskId)
     const token = localStorage.getItem("token");
 
     try {
@@ -165,10 +198,25 @@ const DashboardPage = () => {
     }
   };
 
+
+  const handleEdit = (taskId, task) => {
+
+    setTask({
+      name: task.name,
+      description: task.description,
+      dueDate: task.dueDate ? dayjs(task.dueDate, "DD/MM/YYYY") : null,  // Ajustar el campo para que coincida con la fecha
+      status: task.status,
+      category: task.category,
+    });
+    setIsEditMode(true);  // Cambiar a modo edición
+    setIsModalOpen(true); // Abrir la modal
+    setTaskId(taskId)
+    console.log(task)
+  };
+
   return (
     <div className="dashboard-container">
-      <h2>Welcome to your Dashboard</h2>
-      <p>Manage your tasks efficiently!</p>
+      <h2>Maneja tus tareas eficientemente</h2>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
@@ -177,12 +225,13 @@ const DashboardPage = () => {
           <div key={task.id} className="task-item">
             <h3>{task.name}</h3>
             <p>{task.description}</p>
-            <p>Deadline: {task.deadline}</p>
+            <p>Fecha limite: {task.dueDate}</p>
             <p>Status: {task.status}</p>
-            <p>Category: {task.category}</p>
+            <p>Categoria: {task.category}</p>
             <Button onClick={() => deleteTask(task.id)}>Eliminar</Button>
-            <Button onClick={() => updateTask(task.id, { status: "Done" })}>
-              Marcar como Done
+            <Button onClick={() => handleEdit(task.id, task)} style={{ marginLeft: "10px" }}>Editar</Button>
+            <Button style={{ marginLeft: "10px" }} onClick={() => updateTask(task.id, { status: "Done" })}>
+              Marcar como Completada
             </Button>
           </div>
         ))}
@@ -193,20 +242,20 @@ const DashboardPage = () => {
       </button>
 
       <Modal
-        title="Create New Task"
+        title={isEditMode ? "Editar Tarea" : "Crear nueva tarea"}
         open={isModalOpen}
         onCancel={handleCancel}
         footer={[
           <Button key="cancel" onClick={handleCancel}>
-            Cancel
+            Cancelar
           </Button>,
           <Button key="save" type="primary" onClick={handleSaveTask}>
-            Save Task
+            {isEditMode ? "Guardar cambios" : "Guardar tarea"}
           </Button>,
         ]}
       >
         <Input
-          placeholder="Name Task"
+          placeholder="Nombre de la tarea"
           name="name"
           value={task.name}
           onChange={handleInputChange}
@@ -214,39 +263,49 @@ const DashboardPage = () => {
         />
 
         <Input.TextArea
-          placeholder="Description"
+          placeholder="Descripción"
           name="description"
           value={task.description}
           onChange={handleInputChange}
           style={{ marginBottom: "10px" }}
         />
 
+
         <DatePicker
-          placeholder="Deadline"
+          placeholder="Fecha Límite"
           style={{ width: "100%", marginBottom: "10px" }}
-          onChange={(date, dateString) => setTask({ ...task, dueDate: dateString })}
+          value={task.dueDate ? dayjs(task.dueDate) : null} // Convierte la fecha almacenada a dayjs
+          onChange={(date) => {
+            // Guarda como objeto dayjs
+            setTask({ ...task, dueDate: date ? dayjs(date) : null });
+          }}
         />
 
+
+
         <Select
-          defaultValue="In Progress"
+          value={task.status}
           style={{ width: "100%", marginBottom: "10px" }}
           onChange={handleStatusChange}
         >
-          <Option value="In Progress">In Progress</Option>
-          <Option value="Done">Done</Option>
-          <Option value="Paused">Paused</Option>
-          <Option value="Revision">Revision</Option>
+          <Option value="In Progress">En progreso</Option>
+          <Option value="Done">Completado</Option>
+          <Option value="Paused">Pausado</Option>
+          <Option value="Revision">En revisión</Option>
         </Select>
 
         <Select
-          placeholder="Category / Tag"
+          defaultValue="Personal"
+          value={task.category}
+          placeholder="Categoria"
           style={{ width: "100%" }}
           onChange={handleCategoryChange}
         >
-          <Option value="Work">Work</Option>
+          <Option value="Work">Trabajo</Option>
           <Option value="Personal">Personal</Option>
-          <Option value="Study">Study</Option>
+          <Option value="Study">Escolar</Option>
         </Select>
+
       </Modal>
 
       <style>

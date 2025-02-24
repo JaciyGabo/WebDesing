@@ -11,7 +11,7 @@ const LandingPage = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate("/login");
-    }, 5000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [navigate]);
@@ -42,7 +42,7 @@ const LandingPage = () => {
         <Spin size="large" style={{ color: "#5c6b7e" }} />
 
         <Text type="secondary" style={{ color: "#95a5a6" }}>
-          Cargando login...
+          Cargando...
         </Text>
       </Space>
     </div>
