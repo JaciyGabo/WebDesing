@@ -20,15 +20,19 @@ const Register = ({ onChange }) => {
       });
 
       const data = await response.json();
+      console.log(data);
+      
       if (response.ok) {
         message.success(data.message || "Usuario creado correctamente.");
         setShowModal(true);
         setMessagee(data.message || "Usuario creado correctamente");
       } else {
         message.error(data.message || "Error en el registro.");
+        setShowModal(true);
+        setMessagee(data.message);
       }
     } catch (error) {
-      message.error("Hubo un error al realizar el registro. Intente de nuevo.");
+      message.error("Hubo un error al realizar el registro. Intente de nuevo.", error);
     } finally {
       setLoading(false);
     }

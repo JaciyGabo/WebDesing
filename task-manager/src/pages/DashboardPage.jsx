@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Modal, Input, Select, DatePicker, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import './dash.css'
+//import { Card, Col, Row } from "antd";
 
 const { Option } = Select;
 
@@ -30,6 +32,7 @@ const DashboardPage = () => {
 
 
         }))
+
         setTasks(formattedTask);
       }
     };
@@ -225,17 +228,19 @@ const DashboardPage = () => {
           <div key={task.id} className="task-item">
             <h3>{task.name}</h3>
             <p>{task.description}</p>
-            <p>Fecha limite: {task.dueDate}</p>
+            <p>Fecha límite: {task.dueDate}</p>
             <p>Status: {task.status}</p>
             <p>Categoria: {task.category}</p>
             <Button onClick={() => deleteTask(task.id)}>Eliminar</Button>
-            <Button onClick={() => handleEdit(task.id, task)} style={{ marginLeft: "10px" }}>Editar</Button>
-            <Button style={{ marginLeft: "10px" }} onClick={() => updateTask(task.id, { status: "Done" })}>
+            <Button onClick={() => handleEdit(task.id, task)} >Editar</Button>
+            <Button  onClick={() => updateTask(task.id, { status: "Done" })} disabled={task.status === "Done"}>
               Marcar como Completada
             </Button>
           </div>
         ))}
       </div>
+
+
 
       <button className="floating-button" onClick={showModal}>
         <PlusOutlined style={{ fontSize: "24px" }} />

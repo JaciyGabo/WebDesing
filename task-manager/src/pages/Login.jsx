@@ -26,10 +26,11 @@ const Login = ({ onChange }) => {
       });
 
       const data = await response.json();
-
+      //console.log(data)
       if (response.status === 200) {
+
         localStorage.setItem("token", data.token);
-        console.log(data)
+        //console.log(data)
         setShowModal(true)
         setMessagee(data.message)
       } else {
@@ -42,7 +43,15 @@ const Login = ({ onChange }) => {
   };
   const cerrarModal = () => {
     setShowModal(false)
+    if(messagee == "Inicio de sesión exitoso como usuario"){
+      //console.log("hola");
     navigate("/dashboard");
+
+    } else if (messagee == "Inicio de sesión exitoso como admin"){
+      //console.log("hola2");
+      navigate("/admin");
+      
+    }
   }
 
 

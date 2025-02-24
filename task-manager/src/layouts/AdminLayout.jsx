@@ -2,7 +2,7 @@ import { Layout, Menu, Typography } from "antd";
 import { Link } from "react-router-dom";
 import {
   DashboardOutlined,
-  UserOutlined,
+  UsergroupAddOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
 
@@ -10,7 +10,7 @@ import {
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
 
-const MainLayout = ({ children }) => {
+const AdminLayout = ({ children }) => {
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider 
@@ -38,9 +38,9 @@ const MainLayout = ({ children }) => {
           style={{ background: "#5c6b7e", borderRight: 0 }}
         >
           <Menu.Item key="1" icon={<DashboardOutlined />}>
-            <Link to="/dashboard">Inicio</Link>
+            <Link to="/admin">Inicio</Link>
           </Menu.Item>
-          <Menu.Item key="2" icon={<UserOutlined />}>
+          <Menu.Item key="2" icon={<UsergroupAddOutlined />}>
             <Link to="/groups">Grupos</Link>
           </Menu.Item>
           <Menu.Item key="3" icon={<SettingOutlined />}>
@@ -79,5 +79,5 @@ const MainLayout = ({ children }) => {
   );
 };
 
-export default MainLayout;
+export default AdminLayout;
 
