@@ -30,7 +30,7 @@ const Login = ({ onChange }) => {
       if (response.status === 200) {
 
         localStorage.setItem("token", data.token);
-        //console.log(data)
+        console.log(data)
         setShowModal(true)
         setMessagee(data.message)
       } else {
