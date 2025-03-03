@@ -1,16 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Input, Button, Typography, Card, Space } from "antd";
-import { LockFilled } from "@ant-design/icons";
+//import { LockFilled } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
-const Login = ({ onChange }) => {
+const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [messagee, setMessagee] = useState("");
-
 
   const handleLogin = async (values) => {
     try {
@@ -26,11 +25,8 @@ const Login = ({ onChange }) => {
       });
 
       const data = await response.json();
-      //console.log(data)
       if (response.status === 200) {
-
         localStorage.setItem("token", data.token);
-        //console.log(data)
         setShowModal(true)
         setMessagee(data.message)
       } else {
@@ -41,19 +37,16 @@ const Login = ({ onChange }) => {
       setError("Error de conexión al servidor");
     }
   };
+
   const cerrarModal = () => {
     setShowModal(false)
-    if(messagee == "Inicio de sesión exitoso como usuario"){
-      //console.log("hola");
-    navigate("/dashboard");
+    if (messagee == "Inicio de sesión exitoso como usuario") {
+      navigate("/dashboard");
 
-    } else if (messagee == "Inicio de sesión exitoso como admin"){
-      //console.log("hola2");
+    } else if (messagee == "Inicio de sesión exitoso como admin") {
       navigate("/admin");
-      
     }
   }
-
 
   return (
     <div>
@@ -65,11 +58,19 @@ const Login = ({ onChange }) => {
           borderRadius: 20,
           paddingLeft: 20,
           paddingRight: 20,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#09555B",
+          borderWidth: "4px",
+          borderColor: "#fff",
+          borderStyle: "solid",
         }}
       >
         <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-          <Title level={2} style={{ color: "#5c6b7e", textAlign: "center" }}>
-            <LockFilled /> Inicio de sesión
+          <Title level={2} style={{ color: "#fff", textAlign: "center" }}>
+            Inicio de sesión
           </Title>
 
           {error && (
@@ -78,19 +79,38 @@ const Login = ({ onChange }) => {
             </Text>
           )}
 
-          <Form onFinish={handleLogin}>
+          <Form onFinish={handleLogin} style={{ width: "100%" }}>
+            <div style={{ color: "#fff", fontSize: "0.9rem", marginBottom: "5px", textAlign: "left" }}>
+              Correo:
+            </div>
             <Form.Item
               name="username"
-              rules={[{ required: true, message: "¡Ingrese su usuario!" },   { type: "email", message: "¡Ingrese un email válido!" }]}
+              rules={[{ required: true, message: "¡Ingrese su usuario!" }, { type: "email", message: "¡Ingrese un email válido!" }]}
             >
-              <Input placeholder="Email" />
-            </Form.Item>
 
+              <Input placeholder="Email" style={{
+                width: "100%",
+                backgroundColor: "transparent",
+                border: "2px solid #fff",
+                color: "#fff",
+                borderRadius: "30px",
+              }} />
+            </Form.Item>
+            <div style={{ color: "#fff", fontSize: "0.9rem", marginBottom: "5px", textAlign: "left" }}>
+              Contraseña:
+            </div>
             <Form.Item
               name="password"
               rules={[{ required: true, message: "¡Ingrese su contraseña!" }]}
             >
-              <Input.Password placeholder="Contraseña" />
+              <Input.Password placeholder="Contraseña"
+                style={{
+                  width: "100%",
+                  backgroundColor: "transparent",
+                  border: "2px solid #fff",
+                  color: "#fff",
+                  borderRadius: "30px",
+                }} />
             </Form.Item>
 
             <Form.Item>
@@ -98,49 +118,37 @@ const Login = ({ onChange }) => {
                 type="primary"
                 htmlType="submit"
                 style={{
-                  width: "100%",
-                  backgroundColor: "#5c6b7e",
-                  borderColor: "#5c6b7e",
+                  width: "70%",
+                  backgroundColor: "transparent",
+                  border: "2px solid #fff",
+                  color: "#fff",
+                  borderRadius: "30px",
                 }}
               >
-                Iniciar sesión 
+                Ingresar
               </Button>
             </Form.Item>
 
-            <Form.Item>
-              <Button
-                type="default"
-                onClick={onChange}
-                style={{
-                  width: "100%",
-                  backgroundColor: "#f0f2f5",
-                  borderColor: "#5c6b7e",
-                  color: "#5c6b7e",
-                }}
-              >
-                Registrarse
-              </Button>
-            </Form.Item>
           </Form>
         </Space>
       </Card>
-      
+
       {showModal && (
         <section
           style={{
-            position: "fixed", 
-            top: "50%", 
-            left: "50%", 
-            transform: "translate(-50%, -50%)", 
-            padding: "20px", 
-            backgroundColor: "white", 
-            border: "1px solid rgb(48, 125, 161)", 
-            boxShadow: "0 0 10px rgb(31, 91, 119)", 
-            width: "300px", 
-            height: "auto", 
-            borderRadius: "20px", 
-            display: "block", 
-            textAlign: "center", 
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            padding: "20px",
+            backgroundColor: "white",
+            border: "1px solid rgb(48, 125, 161)",
+            boxShadow: "0 0 10px rgb(31, 91, 119)",
+            width: "300px",
+            height: "auto",
+            borderRadius: "20px",
+            display: "block",
+            textAlign: "center",
           }}
           className="modal"
         >
