@@ -18,6 +18,7 @@ admin.initializeApp({
 const db = admin.firestore();
 const SECRET_KEY = process.env.JWT_SECRET;
 const SALT_ROUNDS = 10; 
+const blacklistedTokens = new Set(); 
 
 app.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
@@ -52,11 +53,14 @@ app.post("/login", async (req, res) => {
 
   try {
     const userRef = db.collection("users").doc(email);
+    
     const userDoc = await userRef.get();
+    console.log(userDoc);
 
     if (!userDoc.exists) {
       return res.status(401).json({ message: "Credenciales incorrectas" });
     }
+
 
     const userData = userDoc.data();
     //console.log(userData.role)
@@ -79,6 +83,16 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.post("/logout", (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (token) {
+    blacklistedTokens.add(token); // Agregar token a la lista negra
+    res.json({ message: "Cierre de sesión exitoso" });
+  } else {
+    res.status(400).json({ message: "No se proporcionó un token" });
+  }
+});
+
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -98,19 +112,22 @@ app.get("/protected", verifyToken, (req, res) => {
 });
 
 app.post("/tasks", verifyToken, async (req, res) => {
-  const { name, description, dueDate, reminder, status, category } = req.body;
+  const { name, description, dueDate, status, category } = req.body;
   const userId = req.user.email;
 
-  if (dueDate === undefined || dueDate === null) {
+  if (!dueDate) {
     return res.status(400).json({ message: "El campo dueDate es requerido" });
   }
+
+  // Convertir la fecha al formato "YYYY-MM-DD"
+  const formattedDueDate = new Date(dueDate).toISOString().split("T")[0];
 
   try {
     const taskRef = await db.collection("tasks").add({
       userId,
       name,
       description,
-      dueDate,
+      dueDate: formattedDueDate, // Guardar solo la fecha sin la hora
       status,
       category,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -141,6 +158,7 @@ app.put("/tasks/:taskId", verifyToken, async (req, res) => {
   const { taskId } = req.params;
   const userId = req.user.email;
   const updates = req.body;
+  
 
   try {
     const taskRef = db.collection("tasks").doc(taskId);
@@ -150,6 +168,10 @@ app.put("/tasks/:taskId", verifyToken, async (req, res) => {
       return res.status(403).json({ message: "No tienes permiso para modificar esta tarea" });
     }
 
+    if (updates.dueDate) {
+      updates.dueDate = updates.dueDate.split("T")[0]; // Extrae solo la parte de la fecha
+    }
+    
     await taskRef.update(updates);
     res.json({ message: "Tarea actualizada" });
   } catch (error) {
@@ -180,12 +202,75 @@ app.delete("/tasks/:taskId", verifyToken, async (req, res) => {
 // Obtener usuarios
 app.get("/users", verifyToken, async (req, res) => {
   try {
+    // Obtener solo los usuarios cuyo rol sea 3 (empleados)
+    const snapshot = await db.collection("users").where("role", "==", 3).get();
+
+    if (snapshot.empty) {
+      return res.json({ message: "No hay empleados registrados.", users: [] });
+    }
+
+    const users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    res.json({ message: "Empleados obtenidos exitosamente", users });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error al obtener los empleados", error: error.message });
+  }
+});
+
+app.get("/users2", verifyToken, async (req, res) => {
+  try {
     const snapshot = await db.collection("users").get();
     const users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     res.json({ message: "Usuarios obtenidos exitosamente", users });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error al obtener los usuarios", error: error.message });
+  }
+});
+
+
+app.put("/users/:email", verifyToken, async (req, res) => {
+  try {
+    const { email } = req.params; // Email del usuario a modificar
+    const adminEmail = req.user.email; // Email del usuario autenticado
+
+    // Buscar al usuario que está haciendo la petición
+    const adminQuery = await db.collection("users").where("email", "==", adminEmail).get();
+
+    if (adminQuery.empty) {
+      return res.status(403).json({ message: "Acceso denegado. Usuario no encontrado." });
+    }
+
+    const adminData = adminQuery.docs[0].data();
+
+    // Validar que el usuario autenticado sea admin (role: 2)
+    if (adminData.role !== 2) {
+      return res.status(403).json({ message: "Acceso denegado. Solo un administrador puede modificar usuarios." });
+    }
+
+    // Buscar al usuario a modificar
+    const userQuery = await db.collection("users").where("email", "==", email).get();
+
+    if (userQuery.empty) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    const userDocRef = userQuery.docs[0].ref;
+    const userData = userQuery.docs[0].data();
+
+    // Verificar si el rol es 2 o 3 y alternarlo
+    if (userData.role === 2) {
+      await userDocRef.update({ role: 3 });
+      res.json({ message: "Rol actualizado a 3" });
+    } else if (userData.role === 3) {
+      await userDocRef.update({ role: 2 });
+      res.json({ message: "Rol actualizado a 2" });
+    } else {
+      res.status(400).json({ message: "El usuario no tiene un rol modificable (solo roles 2 y 3 pueden cambiarse)." });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Error al actualizar el usuario", error: error.message });
   }
 });
 
@@ -206,13 +291,28 @@ app.post("/groups", verifyToken, async (req, res) => {
     res.status(500).json({ message: "Error al crear el grupo", error: error.message });
   }
 });
-
 // Obtener grupos del usuario
 app.get("/groups", verifyToken, async (req, res) => {
-  const userId = req.user.email;
+  const userId = req.user.email; // Obtiene el correo del usuario desde el token
+  
   try {
-    const snapshot = await db.collection("groups").where("userIds", "array-contains", userId).get();
-    const groups = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    // Realiza dos consultas:
+    // 1. Grupos donde el usuario es miembro (userIds contiene el userId)
+    // 2. Grupos que el usuario ha creado (creatorId igual al userId)
+    const userGroupsSnapshot = await db.collection("groups")
+      .where("userIds", "array-contains", userId) // Busca los grupos donde el usuario es miembro
+      .get();
+
+    const createdGroupsSnapshot = await db.collection("groups")
+      .where("createdBy", "==", userId) // Busca los grupos que el usuario ha creado
+      .get();
+    
+    // Une los resultados de ambas consultas
+    const groups = [
+      ...userGroupsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+      ...createdGroupsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+    ];
+
     res.json({ message: "Grupos obtenidos exitosamente", groups });
   } catch (error) {
     console.error(error);
@@ -264,14 +364,13 @@ app.post("/groups/:groupId/tasks", verifyToken, async (req, res) => {
     res.status(500).json({ message: "Error al crear la tarea", error: error.message });
   }
 });
-
 // Endpoint para obtener tareas de un grupo
 app.get("/groups/:groupId/tasks", verifyToken, async (req, res) => {
   const groupId = req.params.groupId;
   const userId = req.user.email;
 
   try {
-    // Verificar si el usuario es miembro del grupo
+    // Obtener los datos del grupo
     const groupRef = db.collection("groups").doc(groupId);
     const groupDoc = await groupRef.get();
 
@@ -280,7 +379,9 @@ app.get("/groups/:groupId/tasks", verifyToken, async (req, res) => {
     }
 
     const groupData = groupDoc.data();
-    if (!groupData.userIds.includes(userId)) {
+
+    // Verificar si el usuario es miembro o creador del grupo
+    if (!groupData.userIds.includes(userId) && groupData.createdBy !== userId) {
       return res.status(403).json({ message: "No tienes permiso para ver las tareas de este grupo" });
     }
 
@@ -325,7 +426,6 @@ app.put("/tasks/:taskId/status", verifyToken, async (req, res) => {
     res.status(500).json({ message: "Error al actualizar el estado de la tarea", error: error.message });
   }
 });
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));

@@ -4,8 +4,8 @@ import LandingPage from "./pages/LandingPage";
 import LoginPage from "./layouts/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import MainLayout from "./layouts/MainLayouts";
-import AdminLayout from "./layouts/AdminLayout";
 import Groups from "./pages/Groups";
+import Users from "./pages/Users";
 import 'antd/dist/reset.css';
 
 function App() {
@@ -23,19 +23,19 @@ function App() {
           }
         />
         <Route
-          path="/admin"
+          path="/users"
           element={
-            <AdminLayout>
-              <DashboardPage />
-            </AdminLayout>
+            <MainLayout>
+              <Users />
+            </MainLayout>
           }
         />
                 <Route
           path="/groups"
           element={
-            <AdminLayout>
+            <MainLayout>
               <Groups />
-            </AdminLayout>
+            </MainLayout>
           }
         />
       </Routes>

@@ -1,48 +1,118 @@
-.tasks-list {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* Cuatro columnas */
-    gap: 20px; /* Espacio entre las tareas */
-    padding: 20px; /* Espaciado alrededor de la lista */
-  }
-  
-  .task-item {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 15px;
-    background-color: #f9f9f9;
-    transition: transform 0.2s;
-    display: flex; /* Usar flex para alinear los elementos dentro de la tarea */
-    flex-direction: column; /* Colocar los elementos en columna */
-    height: 100%; /* Altura flexible */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidad */
-    align-items: center; /* Centrar horizontalmente los elementos */
-  }
-  
-  .task-item h3 {
-    margin: 0 0 10px 0; /* Espaciado para el título */
-    text-align: center; /* Centrar el texto del título */
-  }
-  
-  .task-item button {
-    margin-top: 10px; /* Espacio entre el texto y los botones */
-    border: none; /* Sin borde */
-    border-radius: 5px; /* Bordes redondeados */
-    padding: 10px; /* Espaciado interno del botón */
-    cursor: pointer; /* Cursor en forma de puntero */
-    transition: background-color 0.2s; /* Transición suave para el hover */
-    width: 80%; /* Botones ocupan el 80% del ancho del contenedor */
-    text-align: center; /* Centrar el texto dentro del botón */
-  }
-  
-  .task-item button:hover {
-    background-color: #b30027; /* Color de fondo al hacer hover */
-  }
-  
-  /* Para mantener los botones al final del contenedor */
-  .task-item {
-    display: flex;
+/* Estilos generales */
+.dashboard-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h2 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+/* Tablero Kanban */
+.kanban-board {
+  display: flex;
+  gap: 16px;
+  margin-top: 20px;
+  overflow-x: auto; /* Para permitir el desplazamiento horizontal en pantallas pequeñas */
+}
+
+.kanban-column {
+  flex: 1;
+  min-width: 250px; /* Ancho mínimo para cada columna */
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.kanban-column h3 {
+  text-align: center;
+  color: #34495e;
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+/* Tarjetas de tareas */
+.task-item {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.task-item h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #2c3e50;
+}
+
+.task-item p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #7f8c8d;
+}
+
+.task-item button {
+  margin-right: 5px;
+  font-size: 12px;
+  padding: 5px 10px;
+}
+
+/* Botón flotante */
+.floating-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.floating-button:hover {
+  background-color: #2980b9;
+}
+
+/* Modal */
+.ant-modal-content {
+  border-radius: 8px;
+}
+
+.ant-modal-header {
+  border-radius: 8px 8px 0 0;
+}
+
+.ant-modal-footer {
+  border-radius: 0 0 8px 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .kanban-board {
     flex-direction: column;
-    justify-content: space-between; /* Asegura que el espacio se distribuya entre los elementos */
-    align-items: center; /* Centrar los botones y otros elementos horizontalmente */
   }
-  
+
+  .kanban-column {
+    min-width: 100%;
+  }
+}

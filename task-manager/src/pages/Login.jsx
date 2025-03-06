@@ -49,7 +49,7 @@ const Login = ({ onChange }) => {
 
     } else if (messagee == "Inicio de sesión exitoso como admin"){
       //console.log("hola2");
-      navigate("/admin");
+      navigate("/dashboard");
       
     }
   }
@@ -129,7 +129,7 @@ const Login = ({ onChange }) => {
         <section
           style={{
             position: "fixed", 
-            top: "50%", 
+            top: "40%", 
             left: "50%", 
             transform: "translate(-50%, -50%)", 
             padding: "20px", 

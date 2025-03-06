@@ -1,9 +1,13 @@
+import { useState, useEffect } from "react";
 import { Layout, Menu, Typography } from "antd";
 import { Link } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+
 import {
   DashboardOutlined,
-  UserOutlined,
-  SettingOutlined,
+  TeamOutlined ,
+  UsergroupAddOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
 
 
@@ -11,6 +15,26 @@ const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
 
 const MainLayout = ({ children }) => {
+   const [role, setRole] = useState(0)
+   
+  useEffect(() => {
+      const token = localStorage.getItem("token");
+  
+
+  
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          console.log("Rol del usuario:", decoded.role);
+          setRole(decoded.role)
+        } catch (error) {
+          console.error("Error al decodificar el token:", error);
+        }
+      } else {
+        console.log("No hay token disponible.");
+      }
+    }, []);
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider 
@@ -40,11 +64,16 @@ const MainLayout = ({ children }) => {
           <Menu.Item key="1" icon={<DashboardOutlined />}>
             <Link to="/dashboard">Inicio</Link>
           </Menu.Item>
-          <Menu.Item key="2" icon={<UserOutlined />}>
+          <Menu.Item key="2" icon={<TeamOutlined  />}>
             <Link to="/groups">Grupos</Link>
           </Menu.Item>
-          <Menu.Item key="3" icon={<SettingOutlined />}>
-            <Link to="/settings">Ajustes</Link>
+          {role === 2 && (
+            <Menu.Item key="3" icon={<UsergroupAddOutlined />}>
+              <Link to="/users">Usuarios</Link>
+            </Menu.Item>
+          )}
+          <Menu.Item key="4" icon={<LogoutOutlined />}>
+            <Link to="/login">Cerrar sesión</Link>
           </Menu.Item>
         </Menu>
       </Sider>

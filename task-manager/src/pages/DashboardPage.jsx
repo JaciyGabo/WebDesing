@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { Modal, Input, Select, DatePicker, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import './dash.css'
-//import { Card, Col, Row } from "antd";
+import './dash.css';
 
 const { Option } = Select;
 
@@ -11,13 +10,13 @@ const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [tasks, setTasks] = useState([]);
-  const [taskID, setTaskId] = useState([]);
+  const [taskID, setTaskId] = useState(null);
   const [task, setTask] = useState({
     name: "",
     description: "",
     dueDate: null,
-    status: "In Progress",
-    category: "Work",
+    status: "En progreso",
+    category: "Trabajo",
   });
   const [error, setError] = useState(null);
 
@@ -29,22 +28,19 @@ const DashboardPage = () => {
         const formattedTask = tasks.map(task => ({
           ...task,
           dueDate: task.dueDate ? dayjs(task.dueDate).format("DD/MM/YYYY") : "Sin fecha",
-
-
-        }))
+        }));
 
         setTasks(formattedTask);
       }
     };
 
     getTasks();
-
   }, []);
 
   const showModal = () => {
     setIsEditMode(false);
     setIsModalOpen(true);
-  }
+  };
 
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -52,11 +48,10 @@ const DashboardPage = () => {
       name: "",
       description: "",
       dueDate: null,
-      status: "In Progress",
-      category: "Work",
-    })
-
-  }
+      status: "En progreso",
+      category: "Trabajo",
+    });
+  };
 
   const handleInputChange = (e) => {
     setTask({ ...task, [e.target.name]: e.target.value });
@@ -66,24 +61,20 @@ const DashboardPage = () => {
     setTask({ ...task, status: value });
   };
 
-  /*const handleDateChange = (date, dateString) => {
-    setTask({ ...task, deadline: dateString });
-  };*/
-
   const handleCategoryChange = (value) => {
     setTask({ ...task, category: value });
   };
 
   const handleSaveTask = async () => {
     if (isEditMode) {
-      console.log(taskID)
-      updateTask(taskID, {
+      await updateTask(taskID, {
         name: task.name,
         category: task.category,
         description: task.description,
         status: task.status,
         dueDate: task.dueDate ? task.dueDate.toISOString() : null
-      })
+      });
+      setIsModalOpen(false);
     } else {
       try {
         if (!task.dueDate) {
@@ -95,12 +86,10 @@ const DashboardPage = () => {
         handleCancel();
         const updatedTasks = await fetchTasks();
         setTasks(updatedTasks);
-
       } catch (error) {
         console.error("Error al guardar la tarea:", error);
       }
     }
-
   };
 
   const addTask = async (task) => {
@@ -140,7 +129,6 @@ const DashboardPage = () => {
 
       const data = await response.json();
       if (response.ok) {
-        //console.log(data)
         return data;
       } else {
         setError(data.message || "Error al obtener las tareas");
@@ -177,7 +165,6 @@ const DashboardPage = () => {
   };
 
   const deleteTask = async (taskId) => {
-    console.log(taskId)
     const token = localStorage.getItem("token");
 
     try {
@@ -201,20 +188,21 @@ const DashboardPage = () => {
     }
   };
 
-
   const handleEdit = (taskId, task) => {
-
     setTask({
       name: task.name,
       description: task.description,
-      dueDate: task.dueDate ? dayjs(task.dueDate, "DD/MM/YYYY") : null,  // Ajustar el campo para que coincida con la fecha
+      dueDate: task.dueDate ? dayjs(task.dueDate) : null,
       status: task.status,
       category: task.category,
     });
-    setIsEditMode(true);  // Cambiar a modo edición
-    setIsModalOpen(true); // Abrir la modal
-    setTaskId(taskId)
-    console.log(task)
+    setIsEditMode(true);
+    setIsModalOpen(true);
+    setTaskId(taskId);
+  };
+
+  const getTasksByStatus = (status) => {
+    return tasks.filter(task => task.status === status);
   };
 
   return (
@@ -223,24 +211,30 @@ const DashboardPage = () => {
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <div className="tasks-list">
-        {tasks.map((task) => (
-          <div key={task.id} className="task-item">
-            <h3>{task.name}</h3>
-            <p>{task.description}</p>
-            <p>Fecha límite: {task.dueDate}</p>
-            <p>Status: {task.status}</p>
-            <p>Categoria: {task.category}</p>
-            <Button onClick={() => deleteTask(task.id)}>Eliminar</Button>
-            <Button onClick={() => handleEdit(task.id, task)} >Editar</Button>
-            <Button  onClick={() => updateTask(task.id, { status: "Done" })} disabled={task.status === "Done"}>
-              Marcar como Completada
-            </Button>
+      <div className="kanban-board">
+        {["En progreso", "Pausado", "En revisión", "Completado"].map((status) => (
+          <div key={status} className="kanban-column">
+            <h3>{status}</h3>
+            {getTasksByStatus(status).map((task) => (
+              <div key={task.id} className="task-item">
+                <h3>{task.name}</h3>
+                <p>{task.description}</p>
+                <p>Fecha límite: {task.dueDate}</p>
+                <p>Status: {task.status}</p>
+                <p>Categoria: {task.category}</p>
+                <Button onClick={() => deleteTask(task.id)}>Eliminar</Button>
+                <Button onClick={() => handleEdit(task.id, task)}>Editar</Button>
+                <Button
+                  onClick={() => updateTask(task.id, { status: "Completado" })}
+                  disabled={task.status === "Completado"}
+                >
+                  Marcar como Completada
+                </Button>
+              </div>
+            ))}
           </div>
         ))}
       </div>
-
-
 
       <button className="floating-button" onClick={showModal}>
         <PlusOutlined style={{ fontSize: "24px" }} />
@@ -275,28 +269,24 @@ const DashboardPage = () => {
           style={{ marginBottom: "10px" }}
         />
 
-
         <DatePicker
           placeholder="Fecha Límite"
           style={{ width: "100%", marginBottom: "10px" }}
-          value={task.dueDate ? dayjs(task.dueDate) : null} // Convierte la fecha almacenada a dayjs
+          value={task.dueDate ? dayjs(task.dueDate) : null}
           onChange={(date) => {
-            // Guarda como objeto dayjs
             setTask({ ...task, dueDate: date ? dayjs(date) : null });
           }}
         />
-
-
 
         <Select
           value={task.status}
           style={{ width: "100%", marginBottom: "10px" }}
           onChange={handleStatusChange}
         >
-          <Option value="In Progress">En progreso</Option>
-          <Option value="Done">Completado</Option>
-          <Option value="Paused">Pausado</Option>
-          <Option value="Revision">En revisión</Option>
+          <Option value="En progreso">En progreso</Option>
+          <Option value="Pausado">Pausado</Option>
+          <Option value="En revisión">En revisión</Option>
+          <Option value="Completado">Completado</Option>
         </Select>
 
         <Select
@@ -310,7 +300,6 @@ const DashboardPage = () => {
           <Option value="Personal">Personal</Option>
           <Option value="Study">Escolar</Option>
         </Select>
-
       </Modal>
 
       <style>
@@ -337,8 +326,18 @@ const DashboardPage = () => {
             background-color: #40a9ff;
           }
 
-          .tasks-list {
+          .kanban-board {
+            display: flex;
+            gap: 16px;
             margin-top: 20px;
+          }
+
+          .kanban-column {
+            flex: 1;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
           }
 
           .task-item {
@@ -346,6 +345,7 @@ const DashboardPage = () => {
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 5px;
+            background-color: white;
           }
         `}
       </style>

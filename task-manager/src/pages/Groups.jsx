@@ -45,8 +45,15 @@ const Groups = () => {
     } else {
       console.log("No hay token disponible.");
     }
-  }, []);
+    // Configurar un intervalo para recargar los datos cada 3 minutos
+  const intervalId = setInterval(() => {
+    fetchUsers();
+    fetchGroups();
+  }, 180000); // 180,000 milisegundos = 3 minutos
 
+  // Limpiar el intervalo cuando el componente se desmonte
+  return () => clearInterval(intervalId);
+}, []);
 
   // Función para obtener usuarios
   const fetchUsers = async () => {
@@ -95,14 +102,12 @@ const Groups = () => {
       message.error("Error al obtener tareas");
     }
   };
-
   // Función para abrir el modal de tareas de un grupo
   const handleOpenGroupTasks = (group) => {
     setSelectedGroup(group);
     fetchGroupTasks(group.id);
     setGroupTasksVisible(true);
   };
-
   // Función para actualizar el estado de una tarea
   const handleUpdateTaskStatus = async (taskId, status) => {
     try {
@@ -123,8 +128,6 @@ const Groups = () => {
       message.error("Error al actualizar el estado de la tarea");
     }
   };
-
-
   // Función para crear un grupo
   const handleCreateGroup = async () => {
     try {
@@ -149,13 +152,11 @@ const Groups = () => {
       message.error("Error al crear grupo");
     }
   };
-
   // Función para abrir el modal de tareas
   const handleOpenTaskModal = (group) => {
     setSelectedGroup(group);
     setTaskModalVisible(true);
   };
-
   // Función para crear una tarea en un grupo
   const handleCreateTask = async () => {
     if (!selectedGroup) return;
@@ -214,7 +215,7 @@ const Groups = () => {
               title={group.name}
               actions={[
                 role === 2 && <Button onClick={() => handleOpenTaskModal(group)}>Agregar Tarea</Button>,
-                <Button onClick={() => handleOpenGroupTasks(group)}>Ver tareas</Button>
+                <Button onClick={() => handleOpenGroupTasks(group)}> Ver tareas </Button>
               ]}
               
             >
@@ -294,10 +295,10 @@ const Groups = () => {
               onChange={(value) => setTaskData({ ...taskData, status: value })}
               style={{ width: "100%" }}
             >
-              <Option value="In Progress">En progreso</Option>
-              <Option value="Done">Completado</Option>
-              <Option value="Paused">Pausado</Option>
-              <Option value="Revision">En revisión</Option>
+              <Option value="En progreso">En progreso</Option>
+              <Option value="Pausado">Pausado</Option>
+              <Option value="En revisión">En revisión</Option>
+              <Option value="Completado">Completado</Option>
             </Select>
           </Form.Item>
 
@@ -308,9 +309,9 @@ const Groups = () => {
               onChange={(value) => setTaskData({ ...taskData, category: value })}
               style={{ width: "100%" }}
             >
-              <Option value="Work">Trabajo</Option>
+              <Option value="Trabajo">Trabajo</Option>
               <Option value="Personal">Personal</Option>
-              <Option value="Study">Escolar</Option>
+              <Option value="Escolar">Escolar</Option>
             </Select>
           </Form.Item>
 
