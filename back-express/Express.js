@@ -7,9 +7,15 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const corsOptions = {
+  origin: 'https://web-desing-git-todo4-jaciygabos-projects.vercel.app', // Permite solicitudes desde tu frontend
+  methods: ['GET', 'POST'], // Métodos permitidos
+  allowedHeaders: ['Content-Type'], // Encabezados permitidos
+};
+
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 admin.initializeApp({
   credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_CREDENTIALS)),
