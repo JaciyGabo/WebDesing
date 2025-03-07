@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Table, Button, message } from "antd";
 import { jwtDecode } from "jwt-decode";
-
+import config from "../config";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -12,23 +12,47 @@ const Users = () => {
   // Función para obtener usuarios
   const fetchUsers = async () => {
     const token = localStorage.getItem("token");
-    const decoded = jwtDecode(token);
-    console.log("Rol del usuario:", decoded.email);
-    setEmail(decoded.email)
-    setLoading(true);
+  
+    if (!token) {
+      message.error("No hay token disponible. Inicia sesión nuevamente.");
+      return;
+    }
+  
+    let decoded;
     try {
-      const response = await axios.get("http://localhost:3000/users2", {
+      decoded = jwtDecode(token);
+      console.log("Rol del usuario:", decoded.email);
+      setEmail(decoded.email);
+    } catch (error) {
+      message.error("Error al decodificar el token. Inicia sesión nuevamente.");
+      return;
+    }
+  
+    setLoading(true);
+  
+    try {
+      const response = await fetch(`${config.API_URL}/users2`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // Asegúrate de enviar el token
+          Authorization: `Bearer ${token}`,
         },
       });
-      setUsers(response.data.users);
+  
+      if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`);
+      }
+  
+      // Convertir la respuesta a JSON
+      const data = await response.json();
+      console.log("Usuarios obtenidos:", data); // Ver los datos en consola
+  
+      setUsers(data.users);
     } catch (error) {
       message.error("Error al obtener los usuarios: " + error.message);
     } finally {
       setLoading(false);
     }
   };
+  
 
   // Función para actualizar el rol
   const handleRoleChange = async (email, currentRole) => {

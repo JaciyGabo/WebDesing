@@ -25,7 +25,7 @@ const MainLayout = ({ children }) => {
       if (token) {
         try {
           const decoded = jwtDecode(token);
-          console.log("Rol del usuario:", decoded.role);
+          //console.log("Rol del usuario:", decoded.role);
           setRole(decoded.role)
         } catch (error) {
           console.error("Error al decodificar el token:", error);

@@ -55,7 +55,7 @@ app.post("/login", async (req, res) => {
     const userRef = db.collection("users").doc(email);
     
     const userDoc = await userRef.get();
-    console.log(userDoc);
+    //console.log(userDoc);
 
     if (!userDoc.exists) {
       return res.status(401).json({ message: "Credenciales incorrectas" });
@@ -222,6 +222,7 @@ app.get("/users2", verifyToken, async (req, res) => {
   try {
     const snapshot = await db.collection("users").get();
     const users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    console.log(users);
     res.json({ message: "Usuarios obtenidos exitosamente", users });
   } catch (error) {
     console.error(error);
