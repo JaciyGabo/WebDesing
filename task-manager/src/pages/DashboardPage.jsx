@@ -3,6 +3,7 @@ import { Modal, Input, Select, DatePicker, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import './dash.css';
+import config from "../config";
 
 const { Option } = Select;
 
@@ -96,7 +97,7 @@ const DashboardPage = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("http://localhost:3000/tasks", {
+      const response = await fetch( `${config.API_URL}/tasks`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -120,7 +121,7 @@ const DashboardPage = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("http://localhost:3000/tasks", {
+      const response = await fetch(`${config.API_URL}/tasks`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -142,7 +143,7 @@ const DashboardPage = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
+      const response = await fetch(`${config.API_URL}/tasks/${taskId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -168,7 +169,7 @@ const DashboardPage = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
+      const response = await fetch(`${config.API_URL}/tasks/${taskId}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,

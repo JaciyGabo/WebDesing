@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
+import config from "../config";
 
 const LoginPage = () => {
   const [showLogin, setShowLogin] = useState(true);
@@ -12,9 +13,9 @@ const LoginPage = () => {
   useEffect(() => {
     const logout = async () => {
       const token = localStorage.getItem("token");
-      if (token) {
+      if (token) { 
         try {
-          await fetch("http://localhost:3000/logout", {
+          await fetch(`${config.API_URL}/logout`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

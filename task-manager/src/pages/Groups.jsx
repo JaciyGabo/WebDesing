@@ -3,6 +3,7 @@ import { Button, Modal, Form, Input, DatePicker, Select, List, Card, message, Ta
 import axios from "axios";
 import dayjs from "dayjs";
 import { jwtDecode } from "jwt-decode";
+import config from "../config";
 
 const { Option } = Select;
 
@@ -30,7 +31,7 @@ const Groups = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
+ 
     fetchUsers();
     fetchGroups();
 
@@ -59,7 +60,7 @@ const Groups = () => {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("token"); // Obtén el token del localStorage
-      const res = await axios.get("http://localhost:3000/users", {
+      const res = await axios.get(`${config.API_URL}/users`, {
         headers: {
           Authorization: `Bearer ${token}`, // Envía el token en el encabezado
         },
@@ -75,7 +76,7 @@ const Groups = () => {
   const fetchGroups = async () => {
     try {
       const token = localStorage.getItem("token"); // Obtén el token del localStorage
-      const res = await axios.get("http://localhost:3000/groups", {
+      const res = await axios.get(`${config.API_URL}/groups`, {
         headers: {
           Authorization: `Bearer ${token}`, // Envía el token en el encabezado
         },
@@ -91,7 +92,7 @@ const Groups = () => {
   const fetchGroupTasks = async (groupId) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`http://localhost:3000/groups/${groupId}/tasks`, {
+      const res = await axios.get(`${config.API_URL}/groups/${groupId}/tasks`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -113,7 +114,7 @@ const Groups = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:3000/tasks/${taskId}/status`,
+        `${config.API_URL}/tasks/${taskId}/status`,
         { status },
         {
           headers: {
@@ -133,7 +134,7 @@ const Groups = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        "http://localhost:3000/groups",
+        `${config.API_URL}/groups`,
         { name: groupName, userIds: selectedUsers },
         {
           headers: {
@@ -173,7 +174,7 @@ const Groups = () => {
       };
 
       const res = await axios.post(
-        `http://localhost:3000/groups/${selectedGroup.id}/tasks`,
+        `${config.API_URL}/groups/${selectedGroup.id}/tasks`,
         taskDataToSend,
         {
           headers: {

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Form, Input, Button, Typography, Card, Space, message } from "antd";
 import { UserAddOutlined } from "@ant-design/icons";
+import config from "../config";
 
 const { Title } = Typography;
 
@@ -13,11 +14,11 @@ const Register = ({ onChange }) => {
   const handleRegister = async (values) => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/register", {
+      const response = await fetch(`${config.API_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
-      });
+      }); 
 
       const data = await response.json();
       console.log(data);

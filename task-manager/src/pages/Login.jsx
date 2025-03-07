@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Input, Button, Typography, Card, Space } from "antd";
 import { LockFilled } from "@ant-design/icons";
+import config from "../config";
 
 const { Title, Text } = Typography;
 
@@ -14,7 +15,7 @@ const Login = ({ onChange }) => {
 
   const handleLogin = async (values) => {
     try {
-      const response = await fetch("http://localhost:3000/login", {
+      const response = await fetch(`${config.API_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
