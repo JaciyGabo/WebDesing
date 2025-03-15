@@ -1,354 +1,50 @@
-import { useState, useEffect } from "react";
-import { Modal, Input, Select, DatePicker, Button } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
-import dayjs from "dayjs";
-import './dash.css'
-//import { Card, Col, Row } from "antd";
-
-const { Option } = Select;
-
+import React from 'react';
+import { Input, Button, Card, Row, Col } from 'antd';
+import { WhatsAppOutlined, DownloadOutlined, ShareAltOutlined, HeartOutlined } from '@ant-design/icons';
+import gato from '../assets/PapasQueso.jpeg'
 const DashboardPage = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [tasks, setTasks] = useState([]);
-  const [taskID, setTaskId] = useState([]);
-  const [task, setTask] = useState({
-    name: "",
-    description: "",
-    dueDate: null,
-    status: "In Progress",
-    category: "Work",
-  });
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const getTasks = async () => {
-      const tasks = await fetchTasks();
-
-      if (tasks) {
-        const formattedTask = tasks.map(task => ({
-          ...task,
-          dueDate: task.dueDate ? dayjs(task.dueDate).format("DD/MM/YYYY") : "Sin fecha",
-
-
-        }))
-
-        setTasks(formattedTask);
-      }
-    };
-
-    getTasks();
-
-  }, []);
-
-  const showModal = () => {
-    setIsEditMode(false);
-    setIsModalOpen(true);
-  }
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-    setTask({
-      name: "",
-      description: "",
-      dueDate: null,
-      status: "In Progress",
-      category: "Work",
-    })
-
-  }
-
-  const handleInputChange = (e) => {
-    setTask({ ...task, [e.target.name]: e.target.value });
-  };
-
-  const handleStatusChange = (value) => {
-    setTask({ ...task, status: value });
-  };
-
-  /*const handleDateChange = (date, dateString) => {
-    setTask({ ...task, deadline: dateString });
-  };*/
-
-  const handleCategoryChange = (value) => {
-    setTask({ ...task, category: value });
-  };
-
-  const handleSaveTask = async () => {
-    if (isEditMode) {
-      console.log(taskID)
-      updateTask(taskID, {
-        name: task.name,
-        category: task.category,
-        description: task.description,
-        status: task.status,
-        dueDate: task.dueDate ? task.dueDate.toISOString() : null
-      })
-    } else {
-      try {
-        if (!task.dueDate) {
-          console.error("El campo dueDate es requerido");
-          return;
-        }
-        await addTask({ ...task, dueDate: task.dueDate.toISOString() });
-        console.log("Tarea guardada:", task);
-        handleCancel();
-        const updatedTasks = await fetchTasks();
-        setTasks(updatedTasks);
-
-      } catch (error) {
-        console.error("Error al guardar la tarea:", error);
-      }
-    }
-
-  };
-
-  const addTask = async (task) => {
-    const token = localStorage.getItem("token");
-
-    try {
-      const response = await fetch("http://localhost:3000/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify(task),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        console.log("Tarea creada:", data);
-      } else {
-        console.error("Error al crear la tarea:", data.message);
-      }
-    } catch (error) {
-      console.error("Error al crear la tarea:", error);
-    }
-  };
-
-  const fetchTasks = async () => {
-    const token = localStorage.getItem("token");
-
-    try {
-      const response = await fetch("http://localhost:3000/tasks", {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        //console.log(data)
-        return data;
-      } else {
-        setError(data.message || "Error al obtener las tareas");
-      }
-    } catch (error) {
-      setError("Error al obtener las tareas", error);
-    }
-  };
-
-  const updateTask = async (taskId, updates) => {
-    const token = localStorage.getItem("token");
-
-    try {
-      const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify(updates),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        console.log("Tarea actualizada:", data);
-        const updatedTasks = await fetchTasks();
-        setTasks(updatedTasks);
-      } else {
-        console.error("Error al actualizar la tarea:", data.message);
-      }
-    } catch (error) {
-      console.error("Error al actualizar la tarea:", error);
-    }
-  };
-
-  const deleteTask = async (taskId) => {
-    console.log(taskId)
-    const token = localStorage.getItem("token");
-
-    try {
-      const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        console.log("Tarea eliminada:", data);
-        const updatedTasks = await fetchTasks();
-        setTasks(updatedTasks);
-      } else {
-        console.error("Error al eliminar la tarea:", data.message);
-      }
-    } catch (error) {
-      console.error("Error al eliminar la tarea:", error);
-    }
-  };
-
-
-  const handleEdit = (taskId, task) => {
-
-    setTask({
-      name: task.name,
-      description: task.description,
-      dueDate: task.dueDate ? dayjs(task.dueDate, "DD/MM/YYYY") : null,  // Ajustar el campo para que coincida con la fecha
-      status: task.status,
-      category: task.category,
-    });
-    setIsEditMode(true);  // Cambiar a modo edición
-    setIsModalOpen(true); // Abrir la modal
-    setTaskId(taskId)
-    console.log(task)
-  };
-
   return (
-    <div className="dashboard-container">
-      <h2>Maneja tus tareas eficientemente</h2>
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      <div className="tasks-list">
-        {tasks.map((task) => (
-          <div key={task.id} className="task-item">
-            <h3>{task.name}</h3>
-            <p>{task.description}</p>
-            <p>Fecha límite: {task.dueDate}</p>
-            <p>Status: {task.status}</p>
-            <p>Categoria: {task.category}</p>
-            <Button onClick={() => deleteTask(task.id)}>Eliminar</Button>
-            <Button onClick={() => handleEdit(task.id, task)} >Editar</Button>
-            <Button  onClick={() => updateTask(task.id, { status: "Done" })} disabled={task.status === "Done"}>
-              Marcar como Completada
-            </Button>
-          </div>
-        ))}
-      </div>
-
-
-
-      <button className="floating-button" onClick={showModal}>
-        <PlusOutlined style={{ fontSize: "24px" }} />
-      </button>
-
-      <Modal
-        title={isEditMode ? "Editar Tarea" : "Crear nueva tarea"}
-        open={isModalOpen}
-        onCancel={handleCancel}
-        footer={[
-          <Button key="cancel" onClick={handleCancel}>
-            Cancelar
-          </Button>,
-          <Button key="save" type="primary" onClick={handleSaveTask}>
-            {isEditMode ? "Guardar cambios" : "Guardar tarea"}
-          </Button>,
-        ]}
-      >
-        <Input
-          placeholder="Nombre de la tarea"
-          name="name"
-          value={task.name}
-          onChange={handleInputChange}
-          style={{ marginBottom: "10px" }}
-        />
-
-        <Input.TextArea
-          placeholder="Descripción"
-          name="description"
-          value={task.description}
-          onChange={handleInputChange}
-          style={{ marginBottom: "10px" }}
-        />
-
-
-        <DatePicker
-          placeholder="Fecha Límite"
-          style={{ width: "100%", marginBottom: "10px" }}
-          value={task.dueDate ? dayjs(task.dueDate) : null} // Convierte la fecha almacenada a dayjs
-          onChange={(date) => {
-            // Guarda como objeto dayjs
-            setTask({ ...task, dueDate: date ? dayjs(date) : null });
-          }}
-        />
-
-
-
-        <Select
-          value={task.status}
-          style={{ width: "100%", marginBottom: "10px" }}
-          onChange={handleStatusChange}
-        >
-          <Option value="In Progress">En progreso</Option>
-          <Option value="Done">Completado</Option>
-          <Option value="Paused">Pausado</Option>
-          <Option value="Revision">En revisión</Option>
-        </Select>
-
-        <Select
-          defaultValue="Personal"
-          value={task.category}
-          placeholder="Categoria"
-          style={{ width: "100%" }}
-          onChange={handleCategoryChange}
-        >
-          <Option value="Work">Trabajo</Option>
-          <Option value="Personal">Personal</Option>
-          <Option value="Study">Escolar</Option>
-        </Select>
-
-      </Modal>
-
-      <style>
-        {`
-          .floating-button {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background-color: rgb(25, 99, 173);
-            color: white;
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background 0.3s ease;
-          }
-          
-          .floating-button:hover {
-            background-color: #40a9ff;
-          }
-
-          .tasks-list {
-            margin-top: 20px;
-          }
-
-          .task-item {
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-          }
-        `}
-      </style>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+      <Row gutter={16} style={{ width: '100%', height: '100%' }}>
+        <Col span={7}>
+          <Card style={{ backgroundColor: '#E2E9EE', borderRadius: '20px', padding: '16px', height: '95%', textAlign: 'center' }}>
+            <h2 style={{ color: '#09555B', fontSize: "45px", textAlign: "center" }}>¿Sabias qué?</h2>
+            <p style={{ color: '#09555B', fontSize: "20px" }}>Datos curiosos sobre los gatos</p>
+          </Card>
+        </Col>
+        <Col span={17}>
+          <Card style={{ backgroundColor: '#E2E9EE', borderRadius: '25px', padding: '16px', textAlign: 'center', height: '95%' }}>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+              <Input
+                placeholder="Escribe algo..."
+                style={{borderRadius: '20px', textAlign: 'center', backgroundColor: '#09555B', border: "2px solid #BAC8D3", color: 'white', flex: 1, '::placeholder': { color: 'white' }, WebkitTextFillColor: 'white'  }}
+              />
+              <Button
+                type="primary"
+                style={{ backgroundColor: '#FFC857', border: 'none', color : '#09555B', borderRadius: '10px' }}
+              >
+                Generar imagen
+              </Button>
+            </div>
+            <div style={{ position: 'relative', marginBottom: '16px' }}>
+              <img
+                src={gato}// Reemplaza con la URL de tu imagen
+                alt="Generated"
+                style={{ width: '36%', borderRadius: '8px' }}
+              />
+              <Button
+                icon={<HeartOutlined style={{ color: 'red' }} />}
+                style={{ position: 'absolute', top: '8px', right: '8px', backgroundColor: 'transparent', border: 'none' }}
+              />
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <Button icon={<DownloadOutlined />} style={{ marginRight: '8px' }} />
+              <Button icon={<WhatsAppOutlined />} style={{ marginRight: '8px' }} />
+              <Button icon={<ShareAltOutlined />} />
+            </div>
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 };

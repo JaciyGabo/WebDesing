@@ -1,0 +1,19 @@
+.ant-menu-item {
+  color: #bac8d3 !important; /* Color por defecto */
+  font-size: 28px !important; /* Tamaño de la letra */
+}
+
+.ant-menu-item-selected {
+  color: #ffc857 !important; /* Color cuando está seleccionado */
+}
+
+ /* Elimina la línea inferior del ítem seleccionado */
+ .custom-menu .ant-menu-item.ant-menu-item-selected::after {
+  border-bottom: none !important;
+}
+
+/* Elimina la línea inferior en hover */
+.custom-menu .ant-menu-item:hover::after {
+  border-bottom: none !important;
+}
+

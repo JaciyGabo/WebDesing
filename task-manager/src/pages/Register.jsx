@@ -82,7 +82,10 @@ const Register = () => {
                   border: "2px solid #fff",
                   color: "#fff",
                   borderRadius: "30px",
-                }} />
+                }}
+                className="custom-placeholder"
+                 />
+                
             </Form.Item>
 
 
@@ -103,7 +106,9 @@ const Register = () => {
                   border: "2px solid #fff",
                   color: "#fff",
                   borderRadius: "30px",
-                }} />
+                }}
+                className="custom-placeholder"
+                 />
             </Form.Item>
             <div style={{ color: "#fff", fontSize: "0.9rem", marginBottom: "5px", textAlign: "left" }}>
               Contraseña:
@@ -119,7 +124,9 @@ const Register = () => {
                   border: "2px solid #fff",
                   color: "#fff",
                   borderRadius: "30px",
-                }} />
+                }} 
+                className="custom-password"
+                />
             </Form.Item>
 
             <Form.Item>
@@ -183,6 +190,37 @@ const Register = () => {
           </button>
         </section>
       )}
+
+      <style>
+        {`
+    .custom-password .ant-input-password-icon {
+      color: white !important;
+    }
+    .custom-password .ant-input-password-icon:hover {
+      color: white !important;
+    }
+    .custom-password::placeholder {
+      color: white !important;
+      opacity: 1; /* Asegura que el placeholder sea completamente visible */
+    }
+    .custom-placeholder::placeholder {
+      color: white !important;
+      opacity: 1; /* Asegura que el color se vea bien */
+    }
+    input:-ms-input-placeholder {
+      color: white !important; /* Para IE */
+    }
+    input::-ms-input-placeholder {
+      color: white !important; /* Para IE */
+    }
+    input::-webkit-input-placeholder {
+      color: white !important; /* Para Webkit */
+    }
+    textarea::-webkit-input-placeholder {
+      color: white !important; /* Para Webkit en textarea */
+    }
+  `}
+      </style>
     </div>
   );
 };

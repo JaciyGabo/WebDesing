@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Input, Button, Typography, Card, Space } from "antd";
-//import { LockFilled } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
@@ -27,8 +26,8 @@ const Login = () => {
       const data = await response.json();
       if (response.status === 200) {
         localStorage.setItem("token", data.token);
-        setShowModal(true)
-        setMessagee(data.message)
+        setShowModal(true);
+        setMessagee(data.message);
       } else {
         setError(data.message);
       }
@@ -39,14 +38,13 @@ const Login = () => {
   };
 
   const cerrarModal = () => {
-    setShowModal(false)
-    if (messagee == "Inicio de sesión exitoso como usuario") {
+    setShowModal(false);
+    if (messagee === "Inicio de sesión exitoso como usuario") {
       navigate("/dashboard");
-
-    } else if (messagee == "Inicio de sesión exitoso como admin") {
-      navigate("/admin");
+    } else if (messagee === "Inicio de sesión exitoso como admin") {
+      navigate("/dashboard");
     }
-  }
+  };
 
   return (
     <div>
@@ -79,7 +77,7 @@ const Login = () => {
             </Text>
           )}
 
-          <Form onFinish={handleLogin} style={{ width: "100%" }}>
+          <Form onFinish={/*handleLogin*/ () => navigate("/dashboard")} style={{ width: "100%" }}>
             <div style={{ color: "#fff", fontSize: "0.9rem", marginBottom: "5px", textAlign: "left" }}>
               Correo:
             </div>
@@ -87,14 +85,17 @@ const Login = () => {
               name="username"
               rules={[{ required: true, message: "¡Ingrese su usuario!" }, { type: "email", message: "¡Ingrese un email válido!" }]}
             >
-
-              <Input placeholder="Email" style={{
-                width: "100%",
-                backgroundColor: "transparent",
-                border: "2px solid #fff",
-                color: "#fff",
-                borderRadius: "30px",
-              }} />
+              <Input
+                placeholder="Email"
+                style={{
+                  width: "100%",
+                  backgroundColor: "transparent",
+                  border: "2px solid #fff",
+                  color: "#fff",
+                  borderRadius: "30px",
+                }}
+                className="custom-placeholder"
+              />
             </Form.Item>
             <div style={{ color: "#fff", fontSize: "0.9rem", marginBottom: "5px", textAlign: "left" }}>
               Contraseña:
@@ -103,14 +104,17 @@ const Login = () => {
               name="password"
               rules={[{ required: true, message: "¡Ingrese su contraseña!" }]}
             >
-              <Input.Password placeholder="Contraseña"
+              <Input.Password
+                placeholder="Contraseña"
                 style={{
                   width: "100%",
                   backgroundColor: "transparent",
                   border: "2px solid #fff",
                   color: "#fff",
                   borderRadius: "30px",
-                }} />
+                }}
+                className="custom-password"
+              />
             </Form.Item>
 
             <Form.Item>
@@ -128,7 +132,6 @@ const Login = () => {
                 Ingresar
               </Button>
             </Form.Item>
-
           </Form>
         </Space>
       </Card>
@@ -172,8 +175,40 @@ const Login = () => {
           </button>
         </section>
       )}
+
+      <style>
+        {`
+    .custom-password .ant-input-password-icon {
+      color: white !important;
+    }
+    .custom-password .ant-input-password-icon:hover {
+      color: white !important;
+    }
+    .custom-password::placeholder {
+      color: white !important;
+      opacity: 1; /* Asegura que el placeholder sea completamente visible */
+    }
+    .custom-placeholder::placeholder {
+      color: white !important;
+      opacity: 1; /* Asegura que el color se vea bien */
+    }
+    input:-ms-input-placeholder {
+      color: white !important; /* Para IE */
+    }
+    input::-ms-input-placeholder {
+      color: white !important; /* Para IE */
+    }
+    input::-webkit-input-placeholder {
+      color: white !important; /* Para Webkit */
+    }
+    textarea::-webkit-input-placeholder {
+      color: white !important; /* Para Webkit en textarea */
+    }
+  `}
+      </style>
     </div>
   );
 };
 
 export default Login;
+
