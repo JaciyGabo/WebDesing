@@ -9,8 +9,9 @@ dotenv.config();
 
 const corsOptions = {
   origin: 'https://web-desing-git-todo4-jaciygabos-projects.vercel.app', // Permite solicitudes desde tu frontend
-  methods: ['GET', 'POST'], // Métodos permitidos
-  allowedHeaders: ['Content-Type'], // Encabezados permitidos
+  methods: ["GET","POST","PUT","DELETE"],
+  allowedHeaders: "Content-Type,Authorization",  // ¡Agrega Authorization aquí!
+  credentials: true
 };
 
 const app = express();
